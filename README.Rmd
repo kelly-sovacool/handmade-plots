@@ -1,0 +1,54 @@
+---
+output: 
+  github_document:
+    html_preview: false
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = 'figures/'
+)
+```
+
+# handmade-plots
+
+<!-- badges: start -->
+<!-- badges: end -->
+```{r lib}
+library(extrafont)
+library(cowplot)
+library(tidyverse)
+library(xkcd)
+```
+
+```{r boxplot}
+set.seed(2019)
+axes <- data.frame(y = c(0, 1),
+                   x = c(0, 1)) %>%
+  ggplot(aes(x, y)) +
+  geom_point(color = 'white') +
+  theme_void() +
+  xkcdaxis(range(0, 1), range(0, 1))
+
+plot <- data.frame(
+  rf = runif(100, 0.6, 0.8),
+  l2logit = runif(100, 0.5, 0.75),
+  svm = runif(100, 0.45, 0.65)
+) %>%
+  pivot_longer(everything(), names_to = "model", values_to = 'auroc') %>%
+  mutate(model = as_factor(model)) %>%
+  ggplot(aes(model, auroc)) +
+  geom_boxplot() +
+  ylim(0.5, 1) +
+  theme_cowplot(font_family = 'xkcd Script', font_size = 16) +
+  theme(line = element_blank())
+
+aligned <- align_plots(axes, plot, axis = 'tr')
+ggdraw(aligned[[1]]) + draw_plot(aligned[[2]])
+```
+
+
