@@ -10,7 +10,9 @@ output:
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = 'figures/'
+  fig.path = 'figures/',
+  message = FALSE,
+  warning = FALSE
 )
 ```
 
@@ -32,7 +34,8 @@ axes <- data.frame(y = c(0, 1),
   ggplot(aes(x, y)) +
   geom_point(color = 'white') +
   theme_void() +
-  xkcdaxis(range(0, 1), range(0, 1))
+  xkcdaxis(range(0, 1), range(0.5, 1)) +
+  theme(axis.ticks = element_blank())
 
 plot <- data.frame(
   rf = runif(100, 0.6, 0.8),
@@ -43,11 +46,13 @@ plot <- data.frame(
   mutate(model = as_factor(model)) %>%
   ggplot(aes(model, auroc)) +
   geom_boxplot() +
-  ylim(0.5, 1) +
+  geom_hline(yintercept = 0.5, linetype = 'dashed') +
+  ylim(0, 1) +
   theme_cowplot(font_family = 'xkcd Script', font_size = 16) +
-  theme(line = element_blank())
+  theme(axis.line = element_blank(),
+        axis.ticks = element_blank())
 
-aligned <- align_plots(axes, plot, axis = 'tr')
+aligned <- align_plots(axes, plot, align = 'hv', axis = 'lb')
 ggdraw(aligned[[1]]) + draw_plot(aligned[[2]])
 ```
 
